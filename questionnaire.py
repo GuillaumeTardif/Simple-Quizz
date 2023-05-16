@@ -1,24 +1,8 @@
-# PROJET QUESTIONNAIRE V3 : POO
-#
-# - Pratiquer sur la POO
-# - Travailler sur du code existant
-# - Mener un raisonnement
-#
-# -> Définir les entitées (données, actions)
-#
-# Question
-#    - titre       - str
-#    - choix       - (str)
-#    - bonne_reponse   - str
-#
-#    - poser()  -> bool
-#
-# Questionnaire
-#    - questions      - (Question)
-#
-#    - lancer()
-#
+# PROJET QUESTIONNAIRE
+
 import json
+
+# Made with Python 3.11.0b4
 
 
 class Question:
@@ -70,7 +54,7 @@ class Questionnaire:
         self.question_title = None
         self.filename = filename
         self.questions = []
-
+        
         file = open(self.filename, "r")
         data = file.read()
         self.json_data = json.loads(data)
@@ -100,10 +84,13 @@ class Questionnaire:
 
     def lancer(self):
         score = 0
+        print("***Lancement du questionnaire***")
+        print()
         print(f"Catégorie : {self.category}")
         print(f"Titre : {self.quizz_title}")
         print(f"Difficulté : {self.difficulty}")
         print(f"Nombre de question : {len(self.questions)}")
+        print()
         current_question_index = 1
         for question in self.questions:
             print(f"QUESTION {current_question_index} sur {len(self.questions)}")
@@ -114,22 +101,34 @@ class Questionnaire:
         return score
 
 
-"""questionnaire = (
-    ("Quelle est la capitale de la France ?", ("Marseille", "Nice", "Paris", "Nantes", "Lille"), "Paris"), 
-    ("Quelle est la capitale de l'Italie ?", ("Rome", "Venise", "Pise", "Florence"), "Rome"),
-    ("Quelle est la capitale de la Belgique ?", ("Anvers", "Bruxelles", "Bruges", "Liège"), "Bruxelles")
-                )
+# Main Program
 
-lancer_questionnaire(questionnaire)"""
+questionnaire_list = (
+                        ("Les chats", "animaux_leschats"),
+                        ("Arts : Musée du louvre", "arts_museedulouvre"),
+                        ("Cinéma : Alien", "cinema_alien"),
+                        ("Cinéma : Star Wars", "cinema_starwars")
+                     )
+difficulty_settings = ("debutant",
+                       "confirme",
+                       "expert",
+                      )
 
-# q1 = Question("Quelle est la capitale de la France ?", ("Marseille", "Nice", "Paris", "Nantes", "Lille"), "Paris")
-# q1.poser()
+# Ask for quizz and difficulty
+print("*****JEU DU QUESTIONNAIRE*****")
+print("Choisissez un questionnaire:")
+for i in range(len(questionnaire_list)):
+    print(f' {i+1} - {questionnaire_list[i][0]}')
+questionnaire = input(f'Entrez le numéro du questionnaire (entre 1 et {len(questionnaire_list)}) : ')
+print()
+difficulty = input('Choisissez la difficulté:\n 1 - Débutant\n 2 - Confirmé\n 3 - Expert\n Entrez le numéro de la difficulté (1 à 3) : ')
 
-# data = (("Marseille", "Nice", "Paris", "Nantes", "Lille"), "Paris", "Quelle est la capitale de la France ?")
-# q = Question.FromData(data)
-# print(q.__dict__)
+questionnaire = int(questionnaire)-1
+difficulty = int(difficulty)-1
 
+questionnaire_filename = (questionnaire_list[questionnaire][1] + "_" + difficulty_settings[difficulty] + ".json")
 
-Questionnaire(
-    "animaux_leschats_debutant.json"
-).lancer()
+# Quizz start
+print()
+Questionnaire(questionnaire_filename).lancer()
+
