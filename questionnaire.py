@@ -12,19 +12,25 @@ class Question:
         self.bonne_reponse = bonne_reponse
 
     def FromData(data):
-        # ....
-        q = Question(data[2], data[0], data[1])
+        # Transforme les données choix tuple (titre, bool 'bonne réponse') -> [choix1, choix2....]
+        choix = [i[0] for i in data["choix"]]
+        # Trouve le bon choix en fonction du bool 'bonne réponse'
+        bonne_reponse = [i[0] for i in data["choix"] if i[1]]
+        # Si aucune bonne réponse ou plusieurs bonnes réponses -> Anomalie dans les donnees
+        if len(bonne_reponse) != 1:
+            return None
+        q = Question(data["titre"], choix, bonne_reponse[0])
         return q
 
-    def poser(self):
-        # print("QUESTION")
+    def Poser(self):
+        # print(f"QUESTION {num_question} / {nb_questions}")
         print("  " + self.titre)
         for i in range(len(self.choix)):
             print("  ", i + 1, "-", self.choix[i])
 
         print()
         resultat_response_correcte = False
-        reponse_int = Question.demander_reponse_numerique_utlisateur(1, len(self.choix))
+        reponse_int = Question.DemanderReponseNumeriqueUtlisateur(1, len(self.choix))
         if self.choix[reponse_int - 1].lower() == self.bonne_reponse.lower():
             print("Bonne réponse")
             resultat_response_correcte = True
@@ -34,8 +40,8 @@ class Question:
         print()
         return resultat_response_correcte
 
-    def demander_reponse_numerique_utlisateur(min, max):
-        reponse_str = input("Votre réponse (entre " + str(min) + " et " + str(max) + ") :")
+    def DemanderReponseNumeriqueUtlisateur(min, max):
+        reponse_str = input("Votre réponse (entre " + str(min) + " et " + str(max) + ") : ")
         try:
             reponse_int = int(reponse_str)
             if min <= reponse_int <= max:
@@ -44,7 +50,7 @@ class Question:
             print("ERREUR : Vous devez rentrer un nombre entre", min, "et", max)
         except:
             print("ERREUR : Veuillez rentrer uniquement des chiffres")
-        return Question.demander_reponse_numerique_utlisateur(min, max)
+        return Question.DemanderReponseNumeriqueUtlisateur(min, max)
 
 
 class Questionnaire:
@@ -63,6 +69,7 @@ class Questionnaire:
         self.quizz_title = self.json_data["titre"]
         self.difficulty = self.json_data["difficulte"]
 
+        # Add questions to the quizz
         for question in self.json_data["questions"]:
             self.GetQuestionFromData(question)
             self.questions.append(Question(self.question_title, self.answer_list, self.good_answer))
@@ -82,7 +89,7 @@ class Questionnaire:
         self.good_answer = good_answer
 
 
-    def lancer(self):
+    def Lancer(self):
         score = 0
         print("***Lancement du questionnaire***")
         print()
@@ -95,10 +102,10 @@ class Questionnaire:
         for question in self.questions:
             print(f"QUESTION {current_question_index} sur {len(self.questions)}")
             current_question_index += 1
-            if question.poser():
+            if question.Poser():
                 score += 1
         print("Score final :", score, "sur", len(self.questions))
-        return score
+        return 
 
 
 # Main Program
@@ -130,5 +137,5 @@ questionnaire_filename = (questionnaire_list[questionnaire][1] + "_" + difficult
 
 # Quizz start
 print()
-Questionnaire(questionnaire_filename).lancer()
+Questionnaire(questionnaire_filename).Lancer()
 
