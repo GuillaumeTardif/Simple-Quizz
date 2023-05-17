@@ -12,18 +12,17 @@ class Question:
         self.bonne_reponse = bonne_reponse
 
     def FromData(data):
-        # Transforme les données choix tuple (titre, bool 'bonne réponse') -> [choix1, choix2....]
+        # Transform the data into from tuple (title, bool 'right answer') into a list of choices [choice1, choice2, ...]
         choix = [i[0] for i in data["choix"]]
-        # Trouve le bon choix en fonction du bool 'bonne réponse'
+        # find the correct answer based on the boolean
         bonne_reponse = [i[0] for i in data["choix"] if i[1]]
-        # Si aucune bonne réponse ou plusieurs bonnes réponses -> Anomalie dans les donnees
+        # If there are no correct answer or more than one, then there is an anomaly within the data
         if len(bonne_reponse) != 1:
             return None
         q = Question(data["titre"], choix, bonne_reponse[0])
         return q
 
     def Poser(self):
-        # print(f"QUESTION {num_question} / {nb_questions}")
         print("  " + self.titre)
         for i in range(len(self.choix)):
             print("  ", i + 1, "-", self.choix[i])
@@ -124,14 +123,36 @@ difficulty_settings = ("debutant",
 # Ask for quizz and difficulty
 print("*****JEU DU QUESTIONNAIRE*****")
 print("Choisissez un questionnaire:")
-for i in range(len(questionnaire_list)):
-    print(f' {i+1} - {questionnaire_list[i][0]}')
-questionnaire = input(f'Entrez le numéro du questionnaire (entre 1 et {len(questionnaire_list)}) : ')
-print()
-difficulty = input('Choisissez la difficulté:\n 1 - Débutant\n 2 - Confirmé\n 3 - Expert\n Entrez le numéro de la difficulté (1 à 3) : ')
 
-questionnaire = int(questionnaire)-1
-difficulty = int(difficulty)-1
+# Ask the user which quizz to take
+questionnaire = -1
+while questionnaire < 0:
+    for i in range(len(questionnaire_list)):
+        print(f' {i+1} - {questionnaire_list[i][0]}')
+    try:
+        questionnaire = int(input(f'Entrez le numéro du questionnaire (entre 1 et {len(questionnaire_list)}) : '))
+    except ValueError:
+        print(f"ERREUR: Vous devez entrez un nombre compris entre 1 et {len(questionnaire_list)}")
+    else:
+        if not 0 < questionnaire <= len(questionnaire_list):
+            print(f"ERREUR: Vous devez entrez un nombre compris entre 1 et {len(questionnaire_list)}")
+            questionnaire = -1
+print()
+
+# Ask the user which quizz to take
+difficulty = -1
+while difficulty < 0:
+    try:
+        difficulty = int(input('Choisissez la difficulté:\n 1 - Débutant\n 2 - Confirmé\n 3 - Expert\n Entrez le numéro de la difficulté (1 à 3) : '))
+    except ValueError:
+        print(f"ERREUR: Vous devez entrez un nombre compris entre 1 et {len(difficulty_settings)}")
+    else:
+        if not 0 < difficulty <= len(difficulty_settings):
+            print(f"ERREUR: Vous devez entrez un nombre compris entre 1 et {len(difficulty_settings)}")
+            difficulty = -1
+
+questionnaire = questionnaire-1
+difficulty = difficulty-1
 
 questionnaire_filename = (questionnaire_list[questionnaire][1] + "_" + difficulty_settings[difficulty] + ".json")
 
